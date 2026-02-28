@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timey Command Center // Technical Engineering Manual</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500&family=Exo+2:wght@300;400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        :root {
+            --primary: #00f0ff;
+            --secondary: #ff006e;
+            --accent: #ffbe0b;
+            --dark: #0a0e27;
+            --darker: #050714;
+            --light: #e0e7ff;
+            --grid-color: rgba(0, 240, 255, 0.1);
+            --glow: rgba(0, 240, 255, 0.5);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Technical Grid Background */
+        .tech-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 2px 2px, rgba(0, 240, 255, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .orb-1 {
+            width: 800px;
+            height: 800px;
+            background: var(--primary);
+            top: -300px;
+            right: -200px;
+            animation: float 30s infinite;
+        }
+
+        .orb-2 {
+            width: 600px;
+            height: 600px;
+            background: var(--secondary);
+            bottom: -200px;
+            left: -200px;
+            animation: float 25s infinite reverse;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(50px, -100px);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 4rem;
+        }
+
+        /* Navigation HUD */
+        nav {
+            height: 120px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 5rem;
+        }
+
+        .brand h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .brand span {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        /* Hero */
+        .hero {
+            padding: 4rem 0 10rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 2rem;
+            background: linear-gradient(to bottom, #fff, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.25rem;
+            color: rgba(224, 231, 255, 0.7);
+        }
+
+        /* Technical Breakdown Sections */
+        .tab-section {
+            padding: 8rem 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .section-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--primary);
+            opacity: 0.2;
+        }
+
+        .section-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        /* Detailed Grid Features */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 2rem;
+            padding: 3rem;
+            transition: all 0.4s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            display: block;
+        }
+
+        .feature-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        /* Sub-feature lists */
+        .sub-list {
+            list-style: none;
+        }
+
+        .sub-list li {
+            margin-bottom: 1.5rem;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .sub-list li::before {
+            content: '▫';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .sub-list h5 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--light);
+            margin-bottom: 0.5rem;
+        }
+
+        .sub-list p {
+            font-size: 0.9rem;
+            color: rgba(224, 231, 255, 0.6);
+        }
+
+        /* Spec Sheet Box */
+        .spec-sheet {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 2rem;
+            padding: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 3rem;
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .spec-item h6 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-item span {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        /* Sidebar Highlight */
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.1), transparent);
+            border: 1px solid rgba(255, 0, 110, 0.2);
+            border-radius: 2rem;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .highlight-box::before {
+            content: 'HUD';
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 3rem;
+            color: var(--secondary);
+            opacity: 0.1;
+        }
+
+        /* Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 1s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            padding: 6rem 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            margin-top: 5rem;
+        }
+
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 12px;
+            opacity: 0.2;
+        }
+
+        .technical-viewport {
+            margin: 5rem auto 0;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 2.5rem;
+            padding: 1.5rem;
+            position: relative;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            max-width: 100%;
+            height: 700px;
+            overflow: hidden;
+        }
+
+        .technical-viewport:hover {
+            border-color: var(--primary);
+            box-shadow: 0 60px 120px rgba(0, 240, 255, 0.15);
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        .technical-viewport::before {
+            content: 'LIVE_UPLINK // HUD_SNAPSHOT';
+            position: absolute;
+            top: 25px;
+            left: 35px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        .technical-viewport img {
+            width: 100%;
+            height: 100%;
+            border-radius: 1.5rem;
+            display: block;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            filter: contrast(1.1) brightness(0.85);
+            transition: all 0.6s;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .technical-viewport:hover img {
+            filter: contrast(1.1) brightness(1.1);
+        }
+
+        .separator {
+            border-bottom: 2px solid var(--border);
+            height: 120px;
+            margin-bottom: 5rem;
+        }
+
+        .footer-separator {
+            border-top: 1px solid var(--border);
+            margin-top: 5rem;
+            padding: 4rem 0;
+        }
+
+        /* --- Presentation HUD --- */
+        .presentation-hud {
+            position: fixed;
+            right: 40px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
+        .hud-step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            pointer-events: auto;
+            cursor: pointer;
+            text-decoration: none;
+            opacity: 0.3;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .hud-step .step-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            color: var(--primary);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.4s;
+        }
+
+        .hud-step .step-dot {
+            width: 12px;
+            height: 1px;
+            background: var(--primary);
+            transition: all 0.4s;
+        }
+
+        .hud-step.active {
+            opacity: 1;
+        }
+
+        .hud-step.active .step-dot {
+            width: 40px;
+            height: 2px;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .hud-step.active .step-label {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .hud-step:hover {
+            opacity: 0.8;
+        }
+
+        /* --- HUD Toggle (Mobile Only) --- */
+        .hud-toggle {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--dark);
+            border: 1px solid var(--primary);
+            border-radius: 50%;
+            z-index: 2000;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.4s;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+
+        .hud-toggle:active {
+            transform: scale(0.9);
+        }
+
+        .hud-toggle .material-symbols-outlined {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .hud-toggle.open {
+            background: var(--primary);
+        }
+
+        .hud-toggle.open .material-symbols-outlined {
+            color: var(--dark);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        section.reveal {
+            transition: all 1.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        /* --- Responsive Refactor --- */
+        @media (max-width: 1024px) {
+            .hud-toggle {
+                display: flex;
+            }
+
+            .presentation-hud {
+                right: -100%;
+                top: 0;
+                bottom: 0;
+                transform: none;
+                width: 280px;
+                background: rgba(5, 7, 20, 0.95);
+                backdrop-filter: blur(10px);
+                border-left: 1px solid var(--border);
+                padding: 5rem 2rem;
+                justify-content: center;
+                transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+                pointer-events: auto;
+                opacity: 0;
+            }
+
+            .presentation-hud.open {
+                right: 0;
+                opacity: 1;
+                box-shadow: -20px 0 50px rgba(0, 0, 0, 0.8);
+            }
+
+            .hud-step .step-label {
+                opacity: 0.6;
+                transform: none;
+                font-size: 0.75rem;
+            }
+
+            .hud-step.active .step-label {
+                opacity: 1;
+                font-weight: 700;
+            }
+
+            .container {
+                padding: 0 2rem;
+            }
+
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+
+            .technical-viewport {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+
+            .hero {
+                padding: 3rem 0 6rem;
+            }
+
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-header {
+                gap: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .section-number {
+                font-size: 2.5rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .feature-card {
+                padding: 2rem;
+            }
+
+            .spec-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .spec-sheet {
+                padding: 2rem;
+            }
+
+            .technical-viewport {
+                height: 400px;
+                padding: 1rem;
+                margin-top: 3rem;
+            }
+
+            .technical-viewport::before {
+                font-size: 0.5rem;
+                padding: 4px 10px;
+                top: 15px;
+                left: 20px;
+            }
+
+            .tab-section {
+                padding: 4rem 0;
+            }
+
+            .separator {
+                height: 80px;
+                margin-bottom: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .section-label {
+                font-size: 0.7rem;
+                letter-spacing: 3px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tech-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <!-- HUD Toggle Trigger -->
+    <div class="hud-toggle" id="hudToggle">
+        <span class="material-symbols-outlined">grid_view</span>
+    </div>
+
+    <!-- Presentation Navigation HUD -->
+    <div class="presentation-hud" id="sideHUD">
+        <a href="#hero" class="hud-step active" data-section="hero">
+            <span class="step-label">START</span>
+            <div class="step-dot"></div>
+        </a>
+        <a href="#section-01" class="hud-step" data-section="section-01">
+            <span class="step-label">INTERACTION</span>
+            <div class="step-dot"></div>
+        </a>
+        <a href="#section-02" class="hud-step" data-section="section-02">
+            <span class="step-label">CHROMATIC</span>
+            <div class="step-dot"></div>
+        </a>
+        <a href="#section-03" class="hud-step" data-section="section-03">
+            <span class="step-label">ACOUSTICS</span>
+            <div class="step-dot"></div>
+        </a>
+        <a href="#section-04" class="hud-step" data-section="section-04">
+            <span class="step-label">DISCO</span>
+            <div class="step-dot"></div>
+        </a>
+        <a href="#section-05" class="hud-step" data-section="section-05">
+            <span class="step-label">NEURAL</span>
+            <div class="step-dot"></div>
+        </a>
+        <a href="#section-06" class="hud-step" data-section="section-06">
+            <span class="step-label">PERSISTENCE</span>
+            <div class="step-dot"></div>
+        </a>
+    </div>
+
+    <div class="container">
+        <div class="separator"></div>
+        <section id="hero" class="hero reveal">
+            <h1>COMMAND CENTER<br>DEEP DIVE.</h1>
+            <p>An exhaustive technical analysis of the Timey Command Center software architecture, detailing every
+                operational layer, trigger system, and persistence protocol.</p>
+        </section>
+
+
+
+
+        <!-- 01: KEYS TAB -->
+        <section id="section-01" class="tab-section reveal">
+            <div class="section-header">
+                <div class="section-number">01</div>
+                <div>
+                    <span class="section-label">THE TACTICAL CENTER</span>
+                    <h2 class="section-title">KEYS TAB: MULTI-MODAL CORE</h2>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">hourglass_top</span>
+                    <h3 class="feature-title">Precision Timer Engine</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Deep Work Cycles</h5>
+                            <p>Integrated Pomodoro logic with dedicated "Work" and "Break" duration buffers directly
+                                synced to hardware LEDs.</p>
+                        </li>
+                        <li>
+                            <h5>Recurrent Pacing Logic</h5>
+                            <p>Automated switch-over algorithms that loop timers or switch to cooldown modes without
+                                manual intervention.</p>
+                        </li>
+                        <li>
+                            <h5>Synchronized Countdown</h5>
+                            <p>Real-time `setInterval` state management providing millisecond-perfect visual validation
+                                across the grid.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">alarm</span>
+                    <h3 class="feature-title">Smart Alarm System</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Contextual Scheduling</h5>
+                            <p>High-precision target-time scheduling for meetings, reminders, and daily wake-up calls.
+                            </p>
+                        </li>
+                        <li>
+                            <h5>Calendar Recurrence</h5>
+                            <p>Modular day-picker (Mon-Sun) integration for weekly schedule synchronization.</p>
+                        </li>
+                        <li>
+                            <h5>High-Impact Neon Alerts</h5>
+                            <p>Localized GSAP-driven "Glow Bursts" that highlight the specific key zone during active
+                                notifications.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="feature-grid" style="margin-top: 2rem;">
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">terminal</span>
+                    <h3 class="feature-title">Professional Macro Suite</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Keystroke Injection</h5>
+                            <p>Complex multiple-key mapping (e.g., CTRL+SHIFT+T) handled via a localized keystroke
+                                buffer.</p>
+                        </li>
+                        <li>
+                            <h5>System Action Hooks</h5>
+                            <p>Embedded OS-level interaction for volume control, system mute, and media playback
+                                control.</p>
+                        </li>
+                        <li>
+                            <h5>Application Pathways</h5>
+                            <p>Absolute path execution for rapid software launching directly from physical hardware.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">monitoring</span>
+                    <h3 class="feature-title">Active Slots HUD</h3>
+                    <p class="feature-text" style="color: rgba(224, 231, 255, 0.7);">A secondary Heads-Up Display that
+                        automatically isolates and ranks keys currently running background processes. Provides a
+                        summarized telemetry view of remaining time and status indicators.</p>
+                    <div class="spec-sheet" style="margin-top: 2rem; padding: 1.5rem;">
+                        <span class="section-label" style="font-size: 0.6rem; letter-spacing: 2px;">FEATURE_HIGHLIGHT:
+                            DYNAMIC_PROCESS_RANKING</span>
+                        <p
+                            style="font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--primary); line-height: 1.5;">
+                            Intelligently re-orders the HUD layout based on remaining task duration and urgency level,
+                            ensuring the most critical background processes are always positioned for immediate ocular
+                            validation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="technical-viewport reveal">
+                <img src="images/keys.png" alt="Keys Tab Technical Capture">
+            </div>
+        </section>
+
+        <!-- 02: COLOR TAB -->
+        <section id="section-02" class="tab-section reveal">
+            <div class="section-header">
+                <div class="section-number">02</div>
+                <div>
+                    <span class="section-label">THE CHROMATIC ENGINE</span>
+                    <h2 class="section-title">COLOR TAB: LIGHTING ARCHITECTURE</h2>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">layers</span>
+                    <h3 class="feature-title">Dual-Layer Architecture</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Per-Key Zone Lighting</h5>
+                            <p>Independent 16.8M color customization for each of the 9 primary keys, enabling functional
+                                color-coding.</p>
+                        </li>
+                        <li>
+                            <h5>Atmospheric Base Layer</h5>
+                            <p>Secondary "Under-Glow" hardware layer that can operate independently or sync with the
+                                primary grid's mood.</p>
+                        </li>
+                        <li>
+                            <h5>Sync-to-Active Link</h5>
+                            <p>Intelligent algorithm that detects the 'most important' active key and shifts ambient
+                                glow to match that task's profile.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">palette</span>
+                    <h3 class="feature-title">The Spectrum Interface</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Conic Hue Spectrum</h5>
+                            <p>Intuitive CSS-driven circular UI for 360-degree color selection with zero-latency
+                                response.</p>
+                        </li>
+                        <li>
+                            <h5>Luminosity Bridge</h5>
+                            <p>High-resolution HSL slider managing LED brightness and current draw across the device.
+                            </p>
+                        </li>
+                        <li>
+                            <h5>RGB Telemetry Readout</h5>
+                            <p>Live digital telemetry (0-255 R,G,B) for professional-grade color consistency across
+                                setups.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="spec-sheet">
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <h6>ANIMATION CORE</h6>
+                        <span>BEHAVIORAL LIBRARY</span>
+                    </div>
+                    <div class="spec-item">
+                        <h6>EFFECTS</h6>
+                        <span>PULSE / BREATH / STATIC</span>
+                    </div>
+                    <div class="spec-item">
+                        <h6>PALETTE DOCK</h6>
+                        <span>HOLD-TO-DELETE UX</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="technical-viewport reveal">
+                <img src="images/color.png" alt="Color Tab Technical Capture">
+            </div>
+        </section>
+
+        <!-- 03: SOUND TAB -->
+        <section id="section-03" class="tab-section reveal">
+            <div class="section-header">
+                <div class="section-number">03</div>
+                <div>
+                    <span class="section-label">AUDITORY MATRIX</span>
+                    <h2 class="section-title">SOUND TAB: FEEDBACK SYSTEM</h2>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">volume_up</span>
+                    <h3 class="feature-title">Intelligent Notification Suite</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Curated Acoustic Library</h5>
+                            <p>Professionally mastered tones including Digital Beep, Chronos Chime, and Mechanical Click
+                                for tactile feedback.</p>
+                        </li>
+                        <li>
+                            <h5>Contextual Audio Mapping</h5>
+                            <p>Unique notification sounds for each of the 9 hardware zones, enabling sound-based task
+                                identification.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">cloud_upload</span>
+                    <h3 class="feature-title">Integrated File Injection</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Custom Asset Support</h5>
+                            <p>Direct-to-hardware uploader for high-fidelity MP3 and WAV formats with automated file
+                                validation.</p>
+                        </li>
+                        <li>
+                            <h5>Bespoke Personalization</h5>
+                            <p>Support for brand assets, voice reminders, or signature sound effects in a zero-latency
+                                playback model.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="spec-sheet">
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <h6>MIX CONSOLE</h6><span>GRANULAR GAIN CONTROL</span>
+                    </div>
+                    <div class="spec-item">
+                        <h6>ISOLATION</h6><span>HARDWARE MUTE TOGGLE</span>
+                    </div>
+                    <div class="spec-item">
+                        <h6>SYNC (VAS)</h6><span>GSAP SPEAKER PULSE</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="technical-viewport reveal">
+                <img src="images/sound.png" alt="Sound Tab Technical Capture">
+            </div>
+        </section>
+
+        <!-- 04: DISCO TAB -->
+        <section id="section-04" class="tab-section reveal">
+            <div class="section-header">
+                <div class="section-number">04</div>
+                <div>
+                    <span class="section-label">AMBIENT SYNC ENGINE</span>
+                    <h2 class="section-title">DISCO TAB: AUDIO INTELLIGENCE</h2>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">equalizer</span>
+                    <h3 class="feature-title">Real-Time Core Processing</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>256-Bin FFT Intelligence</h5>
+                            <p>Utilizes Fast Fourier Transform (Web Audio API) to decompose incoming signals into 256
+                                distinct frequency bands.</p>
+                        </li>
+                        <li>
+                            <h5>10-Bar Spectrogram Viz</h5>
+                            <p>Logarithmic-scaled equalizer bars providing high-frame-rate visual response to low, mid,
+                                and high frequencies.</p>
+                        </li>
+                        <li>
+                            <h5>Modular Smoothing Decay</h5>
+                            <p>Physics-based smoothing algorithm that prevents light flickering for buttery-smooth
+                                transitions.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">fluorescent</span>
+                    <h3 class="feature-title">Multi-Mode Lighting Engine</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Dynamic Rainbow Flow</h5>
+                            <p>Cycles through the full HSL spectrum based on audio peak intensity and volume thresholds.
+                            </p>
+                        </li>
+                        <li>
+                            <h5>BPM Pulse & Spectrum Sync</h5>
+                            <p>Spatial lighting response where high frequencies trigger right-side LEDs and low
+                                frequencies trigger left-side ambient glow.</p>
+                        </li>
+                        <li>
+                            <h5>Atmospheric Layering</h5>
+                            <p>Independent reaction logic for 9-key core (melody/mids) and 4-pip atmosphere
+                                (sub-bass/kicks).</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="spec-sheet">
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <h6>LATENCY</h6><span>
+                            &lt; 5ms RESPONSE</span>
+                    </div>
+                    <div class="spec-item">
+                        <h6>PROCESSING</h6><span>WEB AUDIO ANALYSER</span>
+                    </div>
+                    <div class="spec-item">
+                        <h6>CALIBRATION</h6><span>0-100% SENSITIVITY</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="technical-viewport reveal">
+                <img src="images/disco.png" alt="Disco Tab Technical Capture">
+            </div>
+        </section>
+
+        <!-- 05: GAMING -->
+        <section id="section-05" class="tab-section reveal">
+            <div class="section-header">
+                <div class="section-number">05</div>
+                <div>
+                    <span class="section-label">COGNITIVE TRAINING</span>
+                    <h2 class="section-title">NEURAL SYNC GAMING</h2>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">sports_esports</span>
+                    <h3 class="feature-title">Gaming Core</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Simon-Says Logic</h5>
+                            <p>Randomized sequence generator that challenges cognitive focus and hardware layout muscle
+                                memory.</p>
+                        </li>
+                        <li>
+                            <h5>Adaptive Leveling</h5>
+                            <p>Dynamic difficulty scaling that adjusts playback speed and sequence length based on user
+                                performance.</p>
+                        </li>
+                        <li>
+                            <h5>Visual-Spatial Tracking</h5>
+                            <p>Reinforces key-to-function awareness through high-intensity color-mapped flashes.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">analytics</span>
+                    <h3 class="feature-title">Telemetry & Validation</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>High-Stakes Scoring</h5>
+                            <p>Multiplier-based engine that rewards rapid response times and perfect accuracy streaks.
+                            </p>
+                        </li>
+                        <li>
+                            <h5>Hardware Shake Response</h5>
+                            <p>GSAP-powered UI vibration feedback on incorrect sequences, simulating physical error
+                                protocols.</p>
+                        </li>
+                        <li>
+                            <h5>Triple Difficulty Matrix</h5>
+                            <p>Easy (500ms), Normal (350ms), and Insane (250ms) modes for elite reflex testing.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="technical-viewport reveal">
+                <img src="images/gaming.png" alt="Gaming Tab Technical Capture">
+            </div>
+        </section>
+
+        <!-- 06: PROFILES -->
+        <section id="section-06" class="tab-section reveal">
+            <div class="section-header">
+                <div class="section-number">06</div>
+                <div>
+                    <span class="section-label">GLOBAL PERSISTENCE</span>
+                    <h2 class="section-title">THE PROFILES LIBRARY</h2>
+                </div>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">backup</span>
+                    <h3 class="feature-title">Snapshot Architecture</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Deep State Capture</h5>
+                            <p>Full serialization of all 9 keys, including hex codes, macro strings, and active alarm
+                                scheduling.</p>
+                        </li>
+                        <li>
+                            <h5>JSON Persistence</h5>
+                            <p>Modular protocol storage ensuring instant workspace restoration across reboots.</p>
+                        </li>
+                        <li>
+                            <h5>100ms Deployment</h5>
+                            <p>Ultra-efficient mapping reconstruction for near-instant profile switching between
+                                work/play.</p>
+                        </li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <span class="material-symbols-outlined feature-icon">grid_view</span>
+                    <h3 class="feature-title">Management UX</h3>
+                    <ul class="sub-list">
+                        <li>
+                            <h5>Dynamic Grid Previews</h5>
+                            <p>Real-time mini-map thumbnails that mirror the profile's lighting layout for instant
+                                identification.</p>
+                        </li>
+                        <li>
+                            <h5>Hover Utility Dock</h5>
+                            <p>Glassmorphic context menus providing Rename, Save, and Delete functions without layout
+                                clutter.</p>
+                        </li>
+                        <li>
+                            <h5>Themed Confirmations</h5>
+                            <p>Psychologically mapped modal themes (Danger Red / Success Teal) for destructive vs
+                                persistent actions.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="technical-viewport reveal">
+                <img src="images/profiles.png" alt="Profiles Tab Technical Capture">
+            </div>
+        </section>
+
+        <div class="footer-separator"></div>
+    </div>
+
+    <script>
+        const observerOptions = {
+            threshold: 0.2,
+            rootMargin: '-10% 0px -10% 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Animation reveal
+                    entry.target.classList.add('active');
+
+                    // Update Navigator HUD logic
+                    const sectionId = entry.target.id;
+                    if (sectionId) {
+                        const activeLink = document.querySelector(`.hud-step[data-section="${sectionId}"]`);
+                        if (activeLink) {
+                            document.querySelectorAll('.hud-step').forEach(dot => dot.classList.remove('active'));
+                            activeLink.classList.add('active');
+                        }
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Keyboard Presentation Navigation
+        window.addEventListener('keydown', (e) => {
+            const sections = Array.from(document.querySelectorAll('.reveal'));
+            const currentActive = sections.findIndex(sec => {
+                const rect = sec.getBoundingClientRect();
+                return rect.top >= -100 && rect.top <= 100;
+            });
+
+            if (e.key === 'ArrowDown' || e.key === 'Space' || e.key === ' ') {
+                e.preventDefault();
+                if (currentActive < sections.length - 1) {
+                    sections[currentActive + 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (currentActive > 0) {
+                    sections[currentActive - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+
+        // Mobile HUD Toggle Logic
+        const hudToggle = document.getElementById('hudToggle');
+        const sideHUD = document.getElementById('sideHUD');
+
+        hudToggle.addEventListener('click', () => {
+            hudToggle.classList.toggle('open');
+            sideHUD.classList.toggle('open');
+
+            // Toggle icon
+            const icon = hudToggle.querySelector('.material-symbols-outlined');
+            icon.textContent = hudToggle.classList.contains('open') ? 'close' : 'grid_view';
+        });
+
+        // Close side HUD when clicking a link
+        document.querySelectorAll('.hud-step').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    hudToggle.classList.remove('open');
+                    sideHUD.classList.remove('open');
+                    hudToggle.querySelector('.material-symbols-outlined').textContent = 'grid_view';
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
